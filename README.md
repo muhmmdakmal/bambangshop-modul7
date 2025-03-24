@@ -84,12 +84,36 @@ This is the place for you to write reflections:
 
 2. id in Program and url in Subscriber is intended to be unique. Explain based on your understanding, is using Vec (list) sufficient or using DashMap (map/dictionary) like we currently use is necessary for this case?
 
-    Menurut pemahaman saya, karena id di Program dan url di Subscriber harus unik, penggunaan DashMap lebih tepat daripada menggunakan Vec. Dengan DashMap, kita bisa mendapatkan, menambah, atau menghapus data dengan kompleksitas waktu rata-rata O(1) dan memastikan tidak ada duplikasi key. Sedangkan dengan Vec, kita perlu melakukan pencarian secara linear untuk memeriksa keunikan, yang tidak efisien bila jumlah data bertambah.
+    Menurut saya, karena id di Program dan url di Subscriber harus unik, penggunaan DashMap lebih tepat daripada menggunakan Vec. Dengan DashMap, kita bisa mendapatkan, menambah, atau menghapus data dengan kompleksitas waktu rata-rata O(1) dan memastikan tidak ada duplikasi key. Sedangkan dengan Vec, kita perlu melakukan pencarian secara linear untuk memeriksa keunikan, yang tidak efisien bila jumlah data bertambah.
 
 3. When programming using Rust, we are enforced by rigorous compiler constraints to make a thread-safe program. In the case of the List of Subscribers (SUBSCRIBERS) static variable, we used the DashMap external library for thread safe HashMap. Explain based on your understanding of design patterns, do we still need DashMap or we can implement Singleton pattern instead?
-    Menurut pemahaman saya, DashMap digunakan karena menyediakan mekanisme thread-safe secara built-in untuk operasi baca/tulis pada koleksi secara bersamaan. Meskipun Singleton pattern memang memastikan bahwa hanya ada satu instance dari suatu objek (dalam hal ini SUBSCRIBERS), pola tersebut tidak secara otomatis memberikan jaminan thread-safety bagi operasi-operasi yang dilakukan pada data di dalam instance tersebut.
+    Menurut saya, DashMap digunakan karena menyediakan mekanisme thread-safe secara built-in untuk operasi baca/tulis pada koleksi secara bersamaan. Meskipun Singleton pattern memang memastikan bahwa hanya ada satu instance dari suatu objek (dalam hal ini SUBSCRIBERS), pola tersebut tidak secara otomatis memberikan jaminan thread-safety bagi operasi-operasi yang dilakukan pada data di dalam instance tersebut.
 
     Singleton pattern lebih berkaitan dengan pengelolaan instance tunggal, sedangkan DashMap dirancang khusus untuk mengelola akses bersamaan dengan mekanisme locking yang efisien. Jadi, dalam konteks Rust yang memang memperketat aturan thread safety, penggunaan DashMap tetap diperlukan untuk memastikan bahwa operasi pada data collection seperti SUBSCRIBERS berlangsung aman secara thread-safe, meskipun kita mengimplementasikan Singleton pattern untuk instance tunggal.
 #### Reflection Publisher-2
 
+1. In the Model-View Controller (MVC) compound pattern, there is no “Service” and “Repository”. Model in MVC covers both data storage and business logic. Explain based on your understanding of design principles, why we need to separate “Service” and “Repository” from a Model?
+
+    Menurut saya, pemisahan antara Service dan Repository dari Model dilakukan untuk menerapkan prinsip Single Responsibility dan Separation of Concerns. Dengan memisahkan Repository, kita mengisolasi logika akses data (persistence) sehingga modul Model tidak perlu repot menangani detail bagaimana data disimpan atau diambil. Sementara Service bertugas mengatur logika bisnis dan aturan aplikasi, sehingga nantinya apabila ada perubahan dalam business logic atau cara berinteraksi dengan Model, kita tidak perlu mengubah keseluruhan Model. Dengan demikian, pemisahan ini membuat kode menjadi lebih modular, mudah untuk diuji (testable), dan lebih mudah untuk pemeliharaannya
+
+2. What happens if we only use the Model? Explain your imagination on how the interactions between each model (Program, Subscriber, Notification) affect the code complexity for each model?
+
+    Jika kita hanya menggunakan Model tanpa memisahkan Service dan Repository, maka setiap model seperti Program, Subscriber, dan Notification akan memuat seluruh logika bisnis, aturan validasi, serta cara penyimpanan data di dalam satu entitas. Hal ini menyebabkan:
+
+    - Peningkatan Kompleksitas: Setiap model akan memiliki tanggung jawab ganda (logika bisnis dan akses data), sehingga kode menjadi kompleks dan sulit dipahami.
+    - Keterkaitan yang Tinggi: Jika terdapat interaksi atau ketergantungan antar model, misalnya saat Program mengirimkan notifikasi ke Subscriber, maka perubahan di satu model bisa berdampak ke model lainnya, membuat pemeliharaan dan pengujian menjadi sulit.
+    - Kesulitan dalam Pengujian: Karena model mencakup banyak tanggung jawab, akan sulit untuk melakukan unit testing secara terisolasi, mengingat beberapa aspek (seperti logika bisnis dan akses data) saling terkait.
+    - Resiko Error yang Lebih Tinggi: Kode yang tidak terpisah berdasarkan tanggung jawab meningkatkan resiko terjadinya bug saat terjadi perubahan, karena satu bagian yang mengubah logika bisnis bisa merusak alur penyimpanan data atau sebaliknya.
+
+    Dengan demikian, memisahkan Service dan Repository dari Model membantu menjaga Single Responsibility Principle dan Separation of Concerns, sehingga masing-masing komponen lebih modular, mudah diuji, dan dipelihara.
+
+3. Have you explored more about Postman? Tell us how this tool helps you to test your current work. You might want to also list which features in Postman you are interested in or feel like it is helpful to help your Group Project or any of your future software engineering projects.
+    
+    Postman adalah alat yang sangat membantu dalam menguji endpoint API. Dengan Postman, saya bisa:
+
+    - Membuat dan Mengeksekusi Request: Saya dapat dengan mudah membuat request HTTP (GET, POST, PUT, DELETE, dan lain-lain) dan langsung melihat response dari server, yang membantu dalam memastikan API berfungsi sesuai harapan.
+    - Collection Testing: Postman memungkinkan saya untuk menyimpan endpoint-endpoint API dalam sebuah collection, sehingga lebih terorganisir dan memudahkan pengujian sekaligus.
+    - Environment Variables: Fitur ini memungkinkan saya untuk mengubah konfigurasi dengan mudah (misalnya URL host, token autentikasi, atau variabel lainnya), sehingga saya tidak perlu mengubah setiap request ketika berpindah antar environment (development, testing, production).
+
+    Secara keseluruhan, Postman tidak hanya membantu dalam menguji dan memverifikasi API tetapi juga mempercepat proses debugging dan kolaborasi dalam proyek. Fitur-fitur yang saya sebutkan di atas sangat bermanfaat baik untuk proyek kelompok maupun untuk proyek pengembangan perangkat lunak di masa depan.
 #### Reflection Publisher-3
