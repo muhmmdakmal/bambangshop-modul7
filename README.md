@@ -117,3 +117,30 @@ This is the place for you to write reflections:
 
     Secara keseluruhan, Postman tidak hanya membantu dalam menguji dan memverifikasi API tetapi juga mempercepat proses debugging dan kolaborasi dalam proyek. Fitur-fitur yang saya sebutkan di atas sangat bermanfaat baik untuk proyek kelompok maupun untuk proyek pengembangan perangkat lunak di masa depan.
 #### Reflection Publisher-3
+
+1. Observer Pattern has two variations: Push model (publisher pushes data to subscribers) and Pull model (subscribers pull data from publisher). In this tutorial case, which variation of Observer Pattern that we use?
+    
+    Menurut saya, dalam kasus tutorial ini yang kita gunakan adalah variasi Push Model. Hal ini terlihat karena publisher secara aktif mengirimkan notifikasi (melalui HTTP POST) dengan payload data ke setiap subscriber, sehingga data langsung didorong ke subscriber tanpa harus menunggu permintaan dari pihak subscriber.
+
+2. What are the advantages and disadvantages of using the other variation of Observer Pattern for this tutorial case? (example: if you answer Q1 with Push, then imagine if we used Pull)
+    
+    Berikut adalah keunggulan dan kekurangan jika kita menggunakan model pull :
+    
+    **Keunggulan:**
+    - Kontrol Penuh pada Subscriber: Subscriber dapat menentukan kapan mereka akan mengambil data, sehingga bisa mengelola frekuensi update sesuai dengan kapasitas atau kebutuhan mereka.
+    - Pengurangan Notifikasi Tidak Perlu: Karena data hanya diambil saat diperlukan, hal ini bisa menghindari penerimaan notifikasi yang tidak diinginkan jika subscriber tidak sedang siap atau tidak membutuhkan pembaruan secara real time.
+
+    **Kekurangan:**
+    - Polling Berulang: Subscriber harus secara berkala melakukan polling ke publisher untuk mengecek apakah ada data baru, yang bisa menyebabkan overhead jaringan dan beban pemrosesan yang tidak efisien.
+    - Tidak Real-Time: Dibandingkan dengan Push Model, metode pull cenderung memiliki keterlambatan karena bergantung pada interval polling, sehingga notifikasi tidak diterima secara instan.
+    - Kompleksitas Implementasi: Mengatur mekanisme polling yang optimal dan sinkronisasi data antara publisher dan banyak subscriber dapat meningkatkan kompleksitas implementasi sistem.
+
+    Meskipun pull model memiliki keunggulan dalam hal kontrol dan potensi pengurangan notifikasi yang tidak perlu, untuk kasus tutorial ini yang lebih menekankan update secara real-time, Push Model lebih sesuai karena notifikasi didorong langsung dari publisher kepada subscriber.
+
+3. Explain what will happen to the program if we decide to not use multi-threading in the notification process.
+    
+    Jika tidak menggunakan multi-threading, proses pengiriman notifikasi akan dilakukan secara synchronous (berurutan) dalam thread yang sama. Artinya, publisher harus menunggu setiap notifikasi terkirim ke subscriber sebelum melanjutkan proses utama. Hal ini bisa mengakibatkan:
+
+    - Respon API menjadi lambat karena proses notifikasi menambah waktu blocking.
+    - Jika terdapat masalah pada salah satu notifikasi (misalnya, koneksi lambat atau timeout), seluruh proses bisa terhambat.
+    - Beban kerja pada thread utama meningkat, sehingga mengurangi performa sistem secara keseluruhan.
